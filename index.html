@@ -1,0 +1,598 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Allocation Simulator</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f5f7fb;
+            color: #222;
+        }
+
+        .navbar {
+            background-color: #172554;
+            color: white;
+            padding: 18px 40px;
+        }
+
+        .navbar h2 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .home {
+            text-align: center;
+            padding: 25px 20px;
+            background-color: #dbeafe;
+        }
+
+        .home h1 {
+            font-size: 36px;
+            color: #172554;
+            margin: 0;
+        }
+
+        .home h3 {
+            color: #2563eb;
+            margin: 8px 0 0;
+        }
+
+        .container {
+            width: 85%;
+            max-width: 1100px;
+            margin: 20px auto;
+        }
+
+        .box {
+            background-color: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px #d9dce3;
+        }
+
+        .box h2 {
+            text-align: center;
+            color: #172554;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #172554;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        input {
+            width: 95%;
+            padding: 12px;
+            margin-top: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        input:focus {
+            outline: none;
+            border: 2px solid #2563eb;
+        }
+
+        .choice {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .choice button {
+            width: 230px;
+            min-height: 100px;
+            padding: 15px;
+            border: 2px solid #dbeafe;
+            border-radius: 14px;
+            background-color: white;
+            color: #172554;
+            font-size: 19px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px #e0e0e0;
+        }
+
+        .choice button:hover {
+            background-color: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th {
+            background-color: #172554;
+            color: white;
+            padding: 13px;
+        }
+
+        td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        tr:hover {
+            background-color: #f1f5f9;
+        }
+
+        .cards {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            flex: 1;
+            min-width: 180px;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 18px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .card h3 {
+            color: #2563eb;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 24px;
+            font-weight: bold;
+            color: #172554;
+            margin: 0;
+        }
+
+        #bestFitPage,
+        #worstFitPage,
+        #headFirstPage {
+            display: none;
+        }
+
+        .note {
+            background: #eff6ff;
+            padding: 12px;
+            border-radius: 8px;
+            line-height: 1.5;
+        }
+
+        @media screen and (max-width: 700px) {
+            .navbar {
+                padding: 18px;
+            }
+
+            .home h1 {
+                font-size: 30px;
+            }
+
+            .container {
+                width: 92%;
+            }
+
+            .choice {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .choice button {
+                width: 95%;
+            }
+
+            .box {
+                padding: 18px;
+            }
+
+            input {
+                width: 90%;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 8px 4px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <h2>Memory Allocation Simulator</h2>
+    </div>
+
+    <div class="home">
+        <h1>Memory Allocation</h1>
+        <h3>Best Fit • Worst Fit • Head-First Best Fit</h3>
+    </div>
+
+    <!-- INPUT -->
+    <div class="container">
+        <div class="box">
+            <h2>Enter Input</h2>
+
+            <label for="blocks">Memory Blocks (KB)</label>
+            <input
+                type="text"
+                id="blocks"
+                placeholder="Example: 100,500,200,300,600"
+            >
+
+            <label for="processes">Process Sizes (KB)</label>
+            <input
+                type="text"
+                id="processes"
+                placeholder="Example: 212,417,112,426"
+            >
+        </div>
+    </div>
+
+    <!-- ALGORITHM CHOICE -->
+    <div class="container">
+        <div class="box">
+            <h2>Choose Algorithm</h2>
+
+            <div class="choice">
+                <button onclick="runBestFit()">Best Fit</button>
+                <button onclick="runWorstFit()">Worst Fit</button>
+                <button onclick="runHeadFirst()">Head-First Best Fit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- BEST FIT RESULTS -->
+    <div class="container" id="bestFitPage">
+        <div class="box">
+            <h2>Best Fit Memory Allocation</h2>
+            <div id="result"></div>
+        </div>
+
+        <div class="box">
+            <h2>Performance Parameters</h2>
+            <div class="cards">
+                <div class="card">
+                    <h3>Processes Allocated</h3>
+                    <p id="allocated">-</p>
+                </div>
+                <div class="card">
+                    <h3>Memory Utilization</h3>
+                    <p id="utilization">-</p>
+                </div>
+                <div class="card">
+                    <h3>Remaining Memory</h3>
+                    <p id="remaining">-</p>
+                </div>
+                <div class="card">
+                    <h3>Remaining Memory (%)</h3>
+                    <p id="fragmentation">-</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WORST FIT RESULTS -->
+    <div class="container" id="worstFitPage">
+        <div class="box">
+            <h2>Worst Fit Memory Allocation</h2>
+            <div id="worstResult"></div>
+        </div>
+
+        <div class="box">
+            <h2>Performance Parameters</h2>
+            <div class="cards">
+                <div class="card">
+                    <h3>Processes Allocated</h3>
+                    <p id="worstAllocated">-</p>
+                </div>
+                <div class="card">
+                    <h3>Memory Utilization</h3>
+                    <p id="worstUtilization">-</p>
+                </div>
+                <div class="card">
+                    <h3>Remaining Memory</h3>
+                    <p id="worstRemaining">-</p>
+                </div>
+                <div class="card">
+                    <h3>Remaining Memory (%)</h3>
+                    <p id="worstFragmentation">-</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEAD-FIRST RESULTS -->
+    <div class="container" id="headFirstPage">
+        <div class="box">
+            <h2>Head-First Best Fit Allocation</h2>
+            <div id="headFirstResult"></div>
+        </div>
+
+        <div class="box">
+            <h2>Free-Memory Layout (Head First)</h2>
+            <div id="headLayout"></div>
+        </div>
+
+        <div class="box">
+            <h2>Performance Parameters</h2>
+            <div class="cards">
+                <div class="card">
+                    <h3>Processes Allocated</h3>
+                    <p id="headAllocated">-</p>
+                </div>
+                <div class="card">
+                    <h3>Memory Utilization</h3>
+                    <p id="headUtilization">-</p>
+                </div>
+                <div class="card">
+                    <h3>Remaining Memory</h3>
+                    <p id="headRemaining">-</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* Read and validate the user input */
+
+        function getInput() {
+            var blockText = document.getElementById("blocks").value.trim();
+            var processText = document.getElementById("processes").value.trim();
+
+            if (blockText === "" || processText === "") {
+                alert("Please enter memory blocks and process sizes.");
+                return null;
+            }
+
+            var blocks = blockText.split(",").map(Number);
+            var processes = processText.split(",").map(Number);
+
+            if (
+                blocks.some(n => !Number.isFinite(n) || n <= 0) ||
+                processes.some(n => !Number.isFinite(n) || n <= 0)
+            ) {
+                alert("Enter positive numbers separated by commas.");
+                return null;
+            }
+
+            return {
+                blocks: blocks,
+                processes: processes
+            };
+        }
+
+        /* Display only the selected algorithm's page */
+
+        function showPage(pageId) {
+            document.getElementById("bestFitPage").style.display = "none";
+            document.getElementById("worstFitPage").style.display = "none";
+            document.getElementById("headFirstPage").style.display = "none";
+
+            document.getElementById(pageId).style.display = "block";
+        }
+
+        /*
+         * Shared calculation.
+         * mode can be "best", "worst", or "head".
+         */
+
+        function calculate(mode) {
+            var input = getInput();
+
+            if (input === null) {
+                return;
+            }
+
+            var blocks = input.blocks.slice();
+            var processes = input.processes;
+            var originalMemory = blocks.reduce((sum, size) => sum + size, 0);
+
+            var allocatedCount = 0;
+            var usedMemory = 0;
+            var rows = "";
+
+            /*
+             * Head-first demonstration:
+             * the first free region in the list is the head.
+             * Try it first; if it does not fit, use Best Fit.
+             */
+
+            for (var i = 0; i < processes.length; i++) {
+                var processSize = processes[i];
+                var selectedIndex = -1;
+
+                if (mode === "head" && blocks.length > 0 &&
+                    blocks[0] >= processSize) {
+
+                    selectedIndex = 0;
+
+                } else {
+                    var selectedSize = mode === "worst" ? -1 : Infinity;
+
+                    for (var j = 0; j < blocks.length; j++) {
+                        if (blocks[j] >= processSize) {
+                            if (mode === "worst") {
+                                if (blocks[j] > selectedSize) {
+                                    selectedSize = blocks[j];
+                                    selectedIndex = j;
+                                }
+                            } else {
+                                if (blocks[j] < selectedSize) {
+                                    selectedSize = blocks[j];
+                                    selectedIndex = j;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (selectedIndex !== -1) {
+                    var originalBlockSize = blocks[selectedIndex];
+                    var leftover = originalBlockSize - processSize;
+
+                    allocatedCount++;
+                    usedMemory += processSize;
+
+                    rows +=
+                        "<tr>" +
+                        "<td>P" + (i + 1) + "</td>" +
+                        "<td>" + processSize + " KB</td>" +
+                        "<td>Block " + (selectedIndex + 1) + "</td>" +
+                        "<td>" + leftover + " KB</td>" +
+                        "</tr>";
+
+                    /*
+                     * Split the selected free block.
+                     * Keep the leftover space available for later processes.
+                     */
+
+                    if (leftover > 0) {
+                        blocks[selectedIndex] = leftover;
+                    } else {
+                        blocks.splice(selectedIndex, 1);
+                    }
+
+                    /*
+                     * Head-first: move the remaining free region
+                     * to the front of the free-space list.
+                     */
+                    if (mode === "head" && leftover > 0) {
+                        var freeRegion = blocks.splice(selectedIndex, 1)[0];
+                        blocks.unshift(freeRegion);
+                    }
+
+                } else {
+                    rows +=
+                        "<tr>" +
+                        "<td>P" + (i + 1) + "</td>" +
+                        "<td>" + processSize + " KB</td>" +
+                        "<td>Not Allocated</td>" +
+                        "<td>-</td>" +
+                        "</tr>";
+                }
+            }
+
+            var remainingMemory = blocks.reduce((sum, size) => sum + size, 0);
+            var utilization = (usedMemory / originalMemory) * 100;
+            var remainingPercent = (remainingMemory / originalMemory) * 100;
+
+            var table =
+                "<table>" +
+                "<tr>" +
+                "<th>Process</th>" +
+                "<th>Process Size</th>" +
+                "<th>Allocated Block</th>" +
+                "<th>Remaining Space</th>" +
+                "</tr>" +
+                rows +
+                "</table>";
+
+            return {
+                table: table,
+                blocks: blocks,
+                allocatedCount: allocatedCount,
+                processCount: processes.length,
+                usedMemory: usedMemory,
+                remainingMemory: remainingMemory,
+                utilization: utilization,
+                remainingPercent: remainingPercent
+            };
+        }
+
+        /* Traditional Best Fit */
+
+        function runBestFit() {
+            showPage("bestFitPage");
+
+            var data = calculate("best");
+            if (data === undefined) return;
+
+            document.getElementById("result").innerHTML = data.table;
+            document.getElementById("allocated").textContent =
+                data.allocatedCount + " / " + data.processCount;
+            document.getElementById("utilization").textContent =
+                data.utilization.toFixed(2) + "%";
+            document.getElementById("remaining").textContent =
+                data.remainingMemory + " KB";
+            document.getElementById("fragmentation").textContent =
+                data.remainingPercent.toFixed(2) + "%";
+        }
+
+        /* Traditional Worst Fit */
+
+        function runWorstFit() {
+            showPage("worstFitPage");
+
+            var data = calculate("worst");
+            if (data === undefined) return;
+
+            document.getElementById("worstResult").innerHTML = data.table;
+            document.getElementById("worstAllocated").textContent =
+                data.allocatedCount + " / " + data.processCount;
+            document.getElementById("worstUtilization").textContent =
+                data.utilization.toFixed(2) + "%";
+            document.getElementById("worstRemaining").textContent =
+                data.remainingMemory + " KB";
+            document.getElementById("worstFragmentation").textContent =
+                data.remainingPercent.toFixed(2) + "%";
+        }
+
+        /* Simplified Head-First Best Fit demonstration */
+
+        function runHeadFirst() {
+            showPage("headFirstPage");
+
+            var data = calculate("head");
+            if (data === undefined) return;
+
+            document.getElementById("headFirstResult").innerHTML = data.table;
+
+            var layout =
+                "<table>" +
+                "<tr><th>Position</th><th>Free Region</th><th>Free Size</th></tr>";
+
+            for (var i = 0; i < data.blocks.length; i++) {
+                layout +=
+                    "<tr>" +
+                    "<td>" + (i + 1) + "</td>" +
+                    "<td>" + (i === 0 ? "Head Region" : "Free Region") + "</td>" +
+                    "<td>" + data.blocks[i] + " KB</td>" +
+                    "</tr>";
+            }
+
+            layout += "</table>";
+
+            document.getElementById("headLayout").innerHTML = layout;
+            document.getElementById("headAllocated").textContent =
+                data.allocatedCount + " / " + data.processCount;
+            document.getElementById("headUtilization").textContent =
+                data.utilization.toFixed(2) + "%";
+            document.getElementById("headRemaining").textContent =
+                data.remainingMemory + " KB";
+        }
+    </script>
+
+</body>
+</html>
